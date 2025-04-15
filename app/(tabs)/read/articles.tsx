@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 const BASE_URL = "https://newsup-react-native-app-backend.onrender.com";
+
+const capitalize = (text: string) =>
+  text.charAt(0).toUpperCase() + text.slice(1);
 
 const ArticlesScreen = () => {
   const { paper, category } = useLocalSearchParams();
@@ -31,22 +41,35 @@ const ArticlesScreen = () => {
   }, []);
 
   const handlePress = (articleId: number) => {
-    router.push(`/article/${articleId}?paper=${encodeURIComponent(paper as string)}`);
+    router.push(
+      `/article/${articleId}?paper=${encodeURIComponent(paper as string)}`
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Articles in {category}</Text>
-      {loading && <ActivityIndicator size="large" color="#000" />}
-      {titles.map((t) => (
-        <TouchableOpacity
-          key={t.articleId}
-          style={styles.titleBox}
-          onPress={() => handlePress(t.articleId)}
-        >
-          <Text>{t.title}</Text>
-        </TouchableOpacity>
-      ))}
+      <Text style={styles.heading}>
+        Articles in {capitalize(category as string)}
+      </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {titles.map((t, index) => (
+            <TouchableOpacity
+              key={t.articleId}
+              style={styles.articleBox}
+              onPress={() => handlePress(t.articleId)}
+            >
+              <View style={styles.articleHeader}>
+                <Text style={styles.serial}>{index + 1}.</Text>
+                <Text style={styles.title}>{t.title}</Text>
+              </View>
+              <View style={styles.separator} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -54,12 +77,46 @@ const ArticlesScreen = () => {
 export default ArticlesScreen;
 
 const styles = StyleSheet.create({
-  container: { padding: 20, flex: 1, backgroundColor: "#fff" },
-  heading: { fontSize: 20, fontWeight: "bold", marginVertical: 12, textAlign: "center" },
-  titleBox: {
-    backgroundColor: "#f2f2f2",
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 4,
+  container: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
+  heading: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: "#1a1a1a",
+  },
+  scrollContainer: {
+    paddingBottom: 40,
+  },
+  articleBox: {
+    marginBottom: 5,
+    paddingBottom: 10,
+  },
+  articleHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 2,
+  },
+  serial: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#555",
+    width: 28,
+  },
+  title: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#1a1a1a",
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#ddd",
+    marginTop: 10,
   },
 });

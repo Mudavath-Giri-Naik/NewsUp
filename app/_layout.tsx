@@ -1,5 +1,3 @@
-// app/_layout.tsx
-
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -10,7 +8,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
@@ -40,10 +38,10 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? DefaultTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerBackVisible: false, // We are using custom button
+          headerBackVisible: false,
           headerTitleAlign: 'center',
           headerTintColor: '#000',
           headerStyle: {
@@ -53,6 +51,18 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        {/* Custom Header for Article Page */}
+        <Stack.Screen
+          name="article/[id]"
+          options={{
+            headerTitle: () => (
+              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>📰 Article Details</Text>
+            ),
+          }}
+        />
+
+        {/* Default 404 */}
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

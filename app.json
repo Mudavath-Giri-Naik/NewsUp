@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.girinaik.NewsUpApp"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,22 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/089423e5-3c64-4b54-aa1b-5232fbb98b6d",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "089423e5-3c64-4b54-aa1b-5232fbb98b6d"
+      }
+    },
+    "owner": "girinaik"
   }
 }
