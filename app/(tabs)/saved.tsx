@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { useIsFocused } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function SavedScreen() {
   const [savedArticles, setSavedArticles] = useState<any[]>([]);
@@ -36,10 +37,18 @@ export default function SavedScreen() {
   };
 
   const confirmDelete = (articleId: string) => {
-    Alert.alert("Remove Article", "Are you sure you want to remove this article?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Unsave", style: "destructive", onPress: () => removeArticle(articleId) },
-    ]);
+    Alert.alert(
+      "🗑️ Remove Article",
+      "Are you sure you want to remove this article from Saved?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Unsave",
+          style: "destructive",
+          onPress: () => removeArticle(articleId),
+        },
+      ]
+    );
   };
 
   const uniqueCategories = ["All", ...new Set(savedArticles.map((a) => a.category))];
@@ -51,10 +60,13 @@ export default function SavedScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📌 Saved Articles</Text>
+      <View style={styles.header}>
+        <MaterialCommunityIcons name="bookmark-check-outline" size={26} color="#0057D9" />
+        <Text style={styles.title}>Saved Articles</Text>
+      </View>
 
       <View style={styles.filterContainer}>
-        <Text style={styles.filterLabel}>Filter by Category:</Text>
+        <Text style={styles.filterLabel}>Filter by Category</Text>
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={selectedCategory}
@@ -72,6 +84,9 @@ export default function SavedScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.articleId.toString()}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No saved articles in this category.</Text>
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <TouchableOpacity
@@ -83,9 +98,16 @@ export default function SavedScreen() {
               }
             >
               <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.meta}>
-                📂 {item.category}   |   📰 {item.newspaper}
-              </Text>
+              <View style={styles.metaRow}>
+                <View style={styles.metaItem}>
+                  <MaterialCommunityIcons name="file-document-outline" size={16} color="#37474F" />
+                  <Text style={styles.metaText}>{item.category}</Text>
+                </View>
+                <View style={styles.metaItem}>
+                  <MaterialCommunityIcons name="newspaper-variant-outline" size={16} color="#37474F" />
+                  <Text style={styles.metaText}>{item.newspaper}</Text>
+                </View>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => confirmDelete(item.articleId)} style={styles.trashIcon}>
@@ -102,26 +124,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    marginTop: 40,
+    paddingTop: 50,
     backgroundColor: "#f9fafe",
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#1a1a1a",
-    marginBottom: 20,
+    marginLeft: 10,
   },
   filterContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   filterLabel: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 6,
-    color: "#444",
+    marginBottom: 15,
+    color: "#333",
   },
   pickerWrapper: {
-    borderRadius: 12,
+    borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#ffffff",
     borderWidth: 1,
@@ -129,34 +156,45 @@ const styles = StyleSheet.create({
     elevation: Platform.OS === "android" ? 2 : 0,
   },
   picker: {
-    height: 45,
+    height: 55,
     color: "#1a1a1a",
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#e8f0ff",
+    backgroundColor: "#e6f0ff",
     padding: 16,
-    borderRadius: 14,
+    borderRadius: 12,
     marginBottom: 14,
-    shadowColor: "#0057D9",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-    elevation: 3,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "bold",
     color: "#002f6c",
-    marginBottom: 4,
+    marginBottom: 6,
   },
-  meta: {
+  metaRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginRight: 10,
+  },
+  metaText: {
     fontSize: 14,
     color: "#37474F",
   },
   trashIcon: {
-    marginLeft: 10,
+    marginLeft: 12,
     padding: 4,
+  },
+  emptyText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
+    marginTop: 40,
   },
 });

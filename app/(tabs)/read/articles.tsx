@@ -49,19 +49,24 @@ const ArticlesScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>
-        Articles in {capitalize(category as string)}
+        Articles in{" "}
+        <Text style={styles.highlight}>{capitalize(category as string)}</Text>
       </Text>
+
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#333" style={{ marginTop: 40 }} />
       ) : (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
           {titles.map((t, index) => (
             <TouchableOpacity
               key={t.articleId}
-              style={styles.articleBox}
               onPress={() => handlePress(t.articleId)}
+              style={styles.articleTouchable}
             >
-              <View style={styles.articleHeader}>
+              <View style={styles.articleRow}>
                 <Text style={styles.serial}>{index + 1}.</Text>
                 <Text style={styles.title}>{t.title}</Text>
               </View>
@@ -79,44 +84,48 @@ export default ArticlesScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 10,
-    paddingTop: 10,
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    paddingTop: 20,
   },
   heading: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
     textAlign: "center",
     color: "#1a1a1a",
+    marginBottom: 20,
+  },
+  highlight: {
+    color: "#0077cc",
   },
   scrollContainer: {
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
-  articleBox: {
-    marginBottom: 5,
-    paddingBottom: 10,
+  articleTouchable: {
+    paddingVertical: 12,
   },
-  articleHeader: {
+  articleRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 2,
+    gap: 6,
   },
   serial: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#555",
+    color: "#888",
     width: 28,
+    textAlign: "right",
   },
   title: {
     flex: 1,
-    fontSize: 20,
-    fontWeight: "900",
-    color: "#1a1a1a",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#222",
+    lineHeight: 24,
   },
   separator: {
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: "#e0e0e0",
     marginTop: 10,
   },
 });

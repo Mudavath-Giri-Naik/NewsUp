@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = "https://newsup-react-native-app-backend.onrender.com";
@@ -57,13 +57,17 @@ const ArticleDetails = () => {
     const existing = await AsyncStorage.getItem("savedArticles");
     let saved = existing ? JSON.parse(existing) : [];
 
-    const isAlreadySaved = saved.some((a: any) => a.articleId === article.articleId && a.newspaper === paper);
+    const isAlreadySaved = saved.some(
+      (a: any) => a.articleId === article.articleId && a.newspaper === paper
+    );
     if (!isAlreadySaved) {
       saved.push({ ...article, newspaper: paper });
       await AsyncStorage.setItem("savedArticles", JSON.stringify(saved));
     }
 
-    Alert.alert("Saved!", "Article has been saved successfully.", [{ text: "OK", style: "cancel" }]);
+    Alert.alert("Saved!", "Article has been saved successfully.", [
+      { text: "OK", style: "cancel" },
+    ]);
   };
 
   if (loading) {
@@ -97,39 +101,56 @@ const ArticleDetails = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>{article.title}</Text>
 
-      <View style={styles.topRow}>
-        <View style={styles.badgesContainer}>
-          <View style={styles.badge}><Text style={styles.badgeText}>📰 {newspaper}</Text></View>
-          <View style={styles.badge}><Text style={styles.badgeText}>📂 {category}</Text></View>
-          {formattedDate && <View style={styles.badge}><Text style={styles.badgeText}>📅 {formattedDate}</Text></View>}
+      {/* Meta + Action Row */}
+      <View style={styles.metaActionRow}>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaText}>
+            <Feather name="user" size={14} /> {newspaper}
+          </Text>
+          <Text style={styles.dot}>•</Text>
+          <Text style={styles.metaText}>
+            <Feather name="tag" size={14} /> {category}
+          </Text>
+          {formattedDate && (
+            <>
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.metaText}>
+                <Feather name="calendar" size={14} /> {formattedDate}
+              </Text>
+            </>
+          )}
         </View>
 
         <View style={styles.actionRow}>
           <TouchableOpacity onPress={handleShare} style={styles.iconButton}>
-            <Ionicons name="share-social-outline" size={20} color="#0057D9" />
+            <Ionicons name="share-social-outline" size={20} color="#444" />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSave} style={styles.iconButton}>
-            <Ionicons name="bookmark-outline" size={20} color="#0057D9" />
+            <Ionicons name="bookmark-outline" size={20} color="#444" />
           </TouchableOpacity>
         </View>
       </View>
 
       <Text style={styles.sectionHeading}>Description</Text>
-      <Text style={styles.text}>{article.description}</Text>
+      <Text style={styles.paragraph}>{article.description}</Text>
 
-      <Text style={styles.sectionHeading}>Points</Text>
-      {pointList?.map((point: string, index: number) => (
-        <Text key={index} style={styles.point}>
-          {index + 1}. {point}.
-        </Text>
-      ))}
+      {pointList?.length > 0 && (
+        <>
+          <Text style={styles.sectionHeading}>Key Points</Text>
+          {pointList.map((point: string, index: number) => (
+            <Text key={index} style={styles.bullet}>
+              {index + 1}. {point}.
+            </Text>
+          ))}
+        </>
+      )}
 
       {article.glossary && Object.keys(article.glossary).length > 0 && (
         <>
           <Text style={styles.sectionHeading}>Glossary</Text>
           {Object.entries(article.glossary).map(([term, definition]) => (
             <View key={term} style={styles.glossaryItem}>
-              <Text style={styles.term}>• {term}</Text>
+              <Text style={styles.term}>{term}</Text>
               <Text style={styles.definition}>{String(definition)}</Text>
             </View>
           ))}
@@ -142,19 +163,89 @@ const ArticleDetails = () => {
 export default ArticleDetails;
 
 const styles = StyleSheet.create({
-  container: { padding: 20, paddingBottom: 60 },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-  topRow: { flexDirection: "row", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 16 },
-  badgesContainer: { flexDirection: "row", flexWrap: "wrap", gap: 8, flex: 1 },
-  badge: { backgroundColor: "#eef2f7", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, marginRight: 6, marginBottom: 6 },
-  badgeText: { fontSize: 13, color: "#333", fontWeight: "500" },
-  actionRow: { flexDirection: "row", alignItems: "center", gap: 10, marginLeft: 10 },
-  iconButton: { padding: 6 },
-  sectionHeading: { fontSize: 18, fontWeight: "600", marginTop: 1, marginBottom: 6 },
-  text: { fontSize: 16, lineHeight: 22, marginBottom: 10 },
-  point: { fontSize: 16, marginBottom: 6, lineHeight: 22 },
-  glossaryItem: { marginBottom: 6 },
-  term: { fontWeight: "bold", fontSize: 16 },
-  definition: { fontSize: 15, color: "#333", marginLeft: 5 },
+  container: {
+    backgroundColor: "#ffffff",
+    padding: 20,
+    paddingBottom: 60,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "900",
+    color: "#1c1c1e",
+    marginBottom: 12,
+    lineHeight: 40,
+  },
+  metaActionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 1,
+  },
+  metaRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 6,
+    flexShrink: 1,
+  },
+  metaText: {
+    fontSize: 13,
+    color: "#6e6e73",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dot: {
+    fontSize: 14,
+    color: "#888",
+    marginHorizontal: 4,
+  },
+  actionRow: {
+    flexDirection: "row",
+    gap: 20,
+  },
+  iconButton: {
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: "#f1f1f1",
+  },
+  sectionHeading: {
+    fontSize: 23,
+    fontWeight: "900",
+    marginVertical: 16,
+    color: "#222",
+  },
+  paragraph: {
+    fontSize: 16,
+    lineHeight: 26,
+    color: "#333",
+    fontFamily: "serif",
+  },
+  bullet: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#444",
+    marginBottom: 8,
+  },
+  glossaryItem: {
+    marginBottom: 14,
+    paddingLeft: 10,
+    borderLeftWidth: 2,
+    borderLeftColor: "#0077cc",
+  },
+  term: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#1a1a1a",
+  },
+  definition: {
+    fontSize: 15,
+    color: "#555",
+    marginTop: 4,
+    lineHeight: 22,
+  },
 });

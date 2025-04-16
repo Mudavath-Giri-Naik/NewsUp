@@ -4,15 +4,18 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  Dimensions,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+const { height } = Dimensions.get("window");
 
 const newspapers = [
-  "Hindustan Times",
-  "Indian Express",
-  "The Hindu",
-  "Times of India",
+  { name: "Hindustan Times", icon: "newspaper-variant-outline", color: "#0077CC", bg: "#E6F0FA" },
+  { name: "Indian Express", icon: "file-document-outline", color: "#00A86B", bg: "#E6F7F1" },
+  { name: "The Hindu", icon: "book-open-outline", color: "#8A2BE2", bg: "#F1E6FB" },
+  { name: "Times of India", icon: "format-title", color: "#FF6B6B", bg: "#FDEAEA" },
 ];
 
 const NewspaperScreen = () => {
@@ -21,7 +24,7 @@ const NewspaperScreen = () => {
 
   if (type === "regional") {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { justifyContent: "center" }]}>
         <Text style={styles.title}>Regional News</Text>
         <Text style={styles.info}>
           ⚠️ Sorry! No database detected for Regional News at the moment.
@@ -31,76 +34,81 @@ const NewspaperScreen = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Select Your Preferred Newspaper</Text>
       <Text style={styles.subtitle}>Stay informed with trusted sources</Text>
 
-      {newspapers.map((paper, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[styles.card, borderColors[index % borderColors.length]]}
-          onPress={() =>
-            router.push(`/read/category?paper=${encodeURIComponent(paper)}`)
-          }
-        >
-          <Text style={styles.cardText}>{paper}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+      <View style={styles.cardContainer}>
+        {newspapers.map((paper, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.card, { backgroundColor: paper.bg, borderColor: paper.color }]}
+            onPress={() =>
+              router.push(`/read/category?paper=${encodeURIComponent(paper.name)}`)
+            }
+          >
+            <MaterialCommunityIcons
+              name={paper.icon as any}
+              size={30}
+              color={paper.color}
+              style={styles.icon}
+            />
+            <Text style={[styles.cardText, { color: paper.color }]}>
+              {paper.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
   );
 };
 
 export default NewspaperScreen;
 
-// Border styles for colorful borders without background
-const borderColors = [
-  { borderColor: "#0077CC" },
-  { borderColor: "#00A86B" },
-  { borderColor: "#8A2BE2" },
-  { borderColor: "#FF6B6B" },
-];
-
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    padding: 25,
-    backgroundColor: "#f9f9f9",
-    alignItems: "center", 
-    marginTop: 8,
-  },
-  
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-    color: "#1a1a1a",
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#555",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  card: {
-    width: "100%",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginVertical: 8,
-    borderWidth: 2,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 6,
-    elevation: 2,
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 25,
+    backgroundColor: "#ffffff",
     alignItems: "center",
   },
-  cardText: {
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 6,
     color: "#1a1a1a",
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#555",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  cardContainer: {
+    width: "100%",
+    flex: 1,
+    paddingVertical: 10,
+  },
+  
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    width: "100%",
+    marginBottom: 20,
+  },
+  
+  icon: {
+    marginRight: 16,
+  },
+  cardText: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   info: {
     fontSize: 16,
